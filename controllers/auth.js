@@ -7,7 +7,7 @@ import loginInfo from "../models/loginInfo.js";
 import nodemailer from 'nodemailer'
 
 export const signup = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password,deviceInfo } = req.body;
   try {
     const existinguser = await users.findOne({ email });
     if (existinguser) {
@@ -20,6 +20,8 @@ export const signup = async (req, res) => {
       email,
       password: hashedPassword,
     });
+    const loginInfoObj = { ...deviceInfo, id: newUser._id }
+    await loginInfo.create(loginInfoObj)
     const token = jwt.sign(
       { email: newUser.email, id: newUser._id },
       process.env.JWT_SECRET,
